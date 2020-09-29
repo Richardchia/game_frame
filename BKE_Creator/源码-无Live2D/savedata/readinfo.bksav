@@ -1,0 +1,18 @@
+%[
+  "script/story.bkbin"=>%[
+    "*s1"=>148,
+    "*input_check"=>173,
+    "*input_wait"=>7,
+    "*main"=>777
+  ],
+  "script/title.bkbin"=>%[
+    "*start"=>46,
+    "*enter"=>383
+  ],
+  "init.bkbin"=>%[
+    "*init"=>15
+  ],
+  "main.bkbin"=>%[
+    "*main"=>49
+  ]
+]

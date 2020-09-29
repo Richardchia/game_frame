@@ -1,0 +1,64 @@
+﻿*enter
+@textoff
+#f.inGame=false; //让999（即返回标题的存档）的inGame为false
+@pretrans //固定画面的状态
+@layer index=5000 width=1280 height=720 //创建一个层作为标题画面底层
+@sprite index=5001 file='system/title/title'//创建一个载入了标题背景画面的精灵
+@addto index=5001 target=5000 zorder=1 opacity=255//将精灵添加到底层上
+
+//按钮的创建与添加从这里开始
+//因为按钮图片的明明只有编号不同，采用了for loop 来偷懒
+##
+//开始，继续，特典，选项，制作团队 5002-5007
+var button_pos=[[923,380],[923,440],[923,499],[923,559],[0,610],[923,656]];//预先设定的按钮坐标
+var button_event=[ ["*start",'title','jump'],["*load",'system_sl','call'],["*main",'system_omake','call'],['*main','system_option','call'] ,["*main","ED","jump","tf.skipable=true"],['*quit',,'jump']  ]
+##
+@for var=i range=range(1,7)//生成for循环。其中range(1,7)=[1,2,3,4,5,6]
+	//在这个循环中会依次的将01到06号按钮生成并添加到底层上
+	@button index=5001+i idle='title/button/button_n_0'+i click='title/button/button_on_0'+i hover='title/button/button_on_0'+i threshold=10 onclick=button_event[i-1]//创建按钮精灵
+	@addto target=5000 index=5001+i pos=button_pos[i-1] zorder=2//将按钮精灵添加到底层上
+@next
+
+##
+var button_name=['bkeicon', 'sina','qq'];
+var t=["官方网站" ,"官方微博","QQ讨论群"];
+var url=[	"http://bke.bakery.moe",
+		"http://www.weibo.com/bakerymoe",
+		"http://shang.qq.com/wpa/qunwpa?idkey=dfa55730bc97ce7f8c2ab0943300560b67ec37d8c51c0b48d844fe0ca5d3d348"]	;
+##
+@for var=i range=range(0,3)
+	@layer index=5009+i width=50 height=50
+	@sprite index=5010+i file="link/"+button_name[i]
+
+	@addto index=5010+i target=5009+i
+	@layer index=5011+i width=50 height=50
+	@sprite index=5012+i file="link/"+button_name[i]+"_on"
+	@textsprite text=t[i] index=5013+i color=0x000000 size=14 font='font/MFYueYuan_Noncommercial-Regular'
+
+	@anchor index=5013+i set="bottomcenter"
+	@addto index=5012+i target=5011+i
+	@addto index=5013+i target=5011+i pos=[25,-3]
+	@buttonex index=5008+i idle=5009+i hover=5011+i onclick=["","","callback","System.openUrl('"+url[i]+"')"]
+	@addto index=5008+i target=5000 pos=[304+85*i,611] zorder=2 opacity=255
+@next
+@addto index=5000 target=basic_layer//将整个底层添加到基础层上使得底层和基础层能够显示
+@trans mode='normal'//解除画面的固定状态
+//记录bgm
+#sf.bgm[0]=true;
+@bgm file='kouchanojikan'
+@savepoint
+@save index=999
+@waitbutton
+
+
+*start
+#f.inGame = true; //标记为在游戏中
+@action target=5000 mode='fadeto' opacity=0 time=300
+@stop channel=bgm fadeout=300
+@waitallaction
+//开始前清空历史记录
+#History.clear();
+@jump '*main' 'story'
+
+*quit
+@quit
